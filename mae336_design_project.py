@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 col_width = 10
 
+
 class State():
 
     def __init__(self,**kwargs):
