@@ -160,7 +160,7 @@ _6s = State(P=0.3,s=_5.s)
 h6 = _5.h + ((_6s.h - _5.h)/efficiency)
 
 _6 = State(h=h6, P=0.3)
-_7 = State(x=0,P=0.1)
+_7 = State(x=0,P=0.3)
 
 _8s = State(P=12,s=_7.s)     #P8 = P9 = 12MPa
 
