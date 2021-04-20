@@ -65,7 +65,7 @@ class State():
             columns[0] = state_id
         line = ';'.join(columns)
 
-        return line
+        return line + "\n"
     
     def get_csv_header():
         columns = [
@@ -79,7 +79,7 @@ class State():
         ]
         line = ';'.join(columns)
 
-        return line
+        return line + "\n"
 
     def print_state(self, state_id = None):
 
@@ -193,18 +193,16 @@ W_p2 = m1*(_8.h - _7.h)
 
 state_list = [_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11]
 
+csv_file = open("results.csv","w")
+
 State.print_headers()
+csv_file.write(State.get_csv_header())
 
 for n, st in enumerate(state_list):
     st.print_state('State '+ str(n + 1))
+    csv_file.write(st.get_csv_line('State '+ str(n + 1)))
 
-
-
-
-
-
-
-
+csv_file.close()
 
 
 
