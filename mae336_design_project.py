@@ -228,25 +228,39 @@ for j in range(5,115,10):
 plt.plot(p_ch_list,th_list)
 plt.xlabel('Higher pressure extracted (bar)')
 plt.ylabel('Thermal efficiency (%)')
+plt.grid(color='gray', ls = '-.', lw = 0.25)
 plt.show()
 
-plt.plot(p_ch_list,y2_list)
+plt.plot(p_ch_list,y2_list, label=r'$\frac{\dot{m}_2}{\dot{m}_1}$')
+plt.plot(p_ch_list,y3_list, label=r'$\frac{\dot{m}_3}{\dot{m}_1}$')
+plt.legend(loc="center right")
 plt.xlabel('Higher pressure extracted (bar)')
-plt.ylabel('Fraction extracted 2 (-)')
+plt.ylabel('Fraction extracted (-)')
+plt.grid(color='gray', ls = '-.', lw = 0.25)
 plt.show()
 
-plt.plot(p_ch_list,y3_list)
-plt.xlabel('Higher pressure extracted (bar)')
-plt.ylabel('Fraction extracted 3 (-)')
+fig, axs = plt.subplots(3, 1)
+axs[0].plot(p_ch_list, qout_list, label=r'$\dot{q}_{out}$')
+axs[0].legend(loc="upper right")
+axs[0].grid(color='gray', ls = '-.', lw = 0.25)
+axs[1].plot(p_ch_list, wnet_list, 'tab:orange', label=r'$\dot{w}_{net}$')
+axs[1].legend(loc="upper right")
+axs[1].grid(color='gray', ls = '-.', lw = 0.25)
+axs[2].plot(p_ch_list, qin_list, 'tab:green', label=r'$\dot{q}_{in}$')
+axs[2].legend(loc="upper right")
+axs[2].grid(color='gray', ls = '-.', lw = 0.25)
+
+for ax in axs.flat:
+    ax.set(xlabel='Higher pressure extracted (bar)', ylabel='(kJ/kg)')
+
+# Hide x labels and tick labels for top plots and y ticks for right plots.
+for ax in axs.flat:
+    ax.label_outer()
+
 plt.show()
 
-plt.plot(p_ch_list,qin_list,label='Q_in')
-plt.plot(p_ch_list,qout_list,label='Q_out')
-plt.plot(p_ch_list,wnet_list,label='W_net')
-plt.legend(loc="upper right")
-plt.xlabel('Higher pressure extracted (bar)')
-plt.ylabel('(kJ/kg)')
-plt.show()
+
+# View States Table
 
 def printCycleTable():
     print('\n\n-------------------------------------')
@@ -265,33 +279,17 @@ def printCycleTable():
     print("Mass fraction 4:",round(m4/m1,3))
     print('-------------------------------------\n\n')
 
-'''
-printCycleTable()
+def export_results(filename='results.csv'):
+    state_list = [_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11]
+    csv_file = open(filename,"w")
+    State.print_headers()
+    csv_file.write(State.get_csv_header())
 
-state_list = [_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11]
-T_list = []
-s_list = []
+    for n, st in enumerate(state_list):
+        csv_file.write(st.get_csv_line('State '+ str(n + 1)))
 
+    csv_file.close()
 
-
-csv_file = open("results.csv","w")
-
-State.print_headers()
-csv_file.write(State.get_csv_header())
-
-for n, st in enumerate(state_list):
-    st.print_state('State '+ str(n + 1))
-    csv_file.write(st.get_csv_line('State '+ str(n + 1)))
-    T_list.append(st.T)
-    s_list.append(st.s)
-    plt.annotate(str(n + 1), # this is the text
-                 (st.s,st.T), # this is the point to label
-                 textcoords="offset points", # how to position the text
-                 xytext=(5,10), # distance from text to points (x,y)
-                 ha='center')
-
-csv_file.close()
-'''
 
 
 
