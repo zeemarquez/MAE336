@@ -135,7 +135,6 @@ Entropy:        s (kJ K/kg)
 
 '''
 
-
 # Pressure Closed Heater
 p_ch = 2
 
@@ -145,56 +144,56 @@ p_oh = 0.3
 # Pressure Condenser
 p_cond = 0.006
 
-p_ch_list = []
-th_list = []
-y2_list = []
-y3_list = []
-y4_list = []
-qin_list = []
-qout_list = []
-wnet_list = []
+p_ch_list = []  #List of closed heater pressure
+th_list = []    #List of thermal efficiency
+y2_list = []    #List of extracted fraction 2
+y3_list = []    #List of extracted fraction 3
+y4_list = []    #List of extracted fraction 4
+qin_list = []   #List of heat added
+qout_list = []  #List of heat rejected
+wnet_list = []  #List of net power
 
-for j in range(5,115,10):
+for bar in range(5,115,10):
 
-    p_ch = j/10
+    p_ch = bar/10       #Pressure of closed heater in MPa
 
-    efficiency = 0.8
-    m1 = 1.5 * (10**4) #kg/s
+    efficiency = 0.8    #Turbines and pumps isentropic efficiency   
+    m1 = 1.5 * (10**4)  #mass flow trough steam generator kg/s
 
-    _1 = State(T=(480+273),P=12)
+    _1 = State(T=(480+273),P=12)            #State 1
 
-    _2s = State(P=p_ch, s= _1.s)
-    _3s = State(P=p_oh, s= _1.s)
-    _4s = State(P=p_cond, s= _1.s)
+    _2s = State(P=p_ch, s= _1.s)            #Isentropic state 2
+    _3s = State(P=p_oh, s= _1.s)            #Isentropic state 3
+    _4s = State(P=p_cond, s= _1.s)          #Isentropic state 4
 
-    h2 = _1.h + efficiency*(_2s.h - _1.h)
-    h3 = _1.h + efficiency*(_3s.h - _1.h)
-    h4 = _1.h + efficiency*(_4s.h - _1.h)
+    h2 = _1.h + efficiency*(_2s.h - _1.h)   #Specific enthalpy actual state 2
+    h3 = _1.h + efficiency*(_3s.h - _1.h)   #Specific enthalpy actual state 3
+    h4 = _1.h + efficiency*(_4s.h - _1.h)   #Specific enthalpy actual state 4
 
-    _2 = State(h=h2, P=p_ch)
-    _3 = State(h=h3, P=p_oh)
-    _4 = State(h=h4, P=p_cond)
+    _2 = State(h=h2, P=p_ch)                #State 2
+    _3 = State(h=h3, P=p_oh)                #State 3
+    _4 = State(h=h4, P=p_cond)              #State 4
+    _5 = State(P=p_cond, x=0)               #State 5
 
-    _5 = State(P=p_cond, x=0)
-    _6s = State(P=p_oh,s=_5.s)
+    _6s = State(P=p_oh,s=_5.s)              #Isentropic state 6
 
-    h6 = _5.h + ((_6s.h - _5.h)/efficiency)
+    h6 = _5.h + ((_6s.h - _5.h)/efficiency) #Specific enthalpy actual state 6
 
-    _6 = State(h=h6, P=p_oh)
-    _7 = State(x=0, P=p_oh)
+    _6 = State(h=h6, P=p_oh)                #State 6
+    _7 = State(x=0, P=p_oh)                 #State 7
 
-    _8s = State(P=12,s=_7.s)     #P8 = P9 = 12MPa
+    _8s = State(P=12,s=_7.s)                #Isentropic state 8 (P8 = P9 = 12MPa)
 
-    h8 = _7.h + ((_8s.h - _7.h)/efficiency)
+    h8 = _7.h + ((_8s.h - _7.h)/efficiency) #Specific enthalpy actual state 8
 
-    _8 = State(h=h8, P=12)
-    _9 = State(T=(210+273), P=12)
-    _10 = State(P=p_ch, x=0)       # h10 = h11
-    _11 = State(P=p_oh, h=_10.h)
+    _8 = State(h=h8, P=12)                  #State 8
+    _9 = State(T=(210+273), P=12)           #State 9
+    _10 = State(P=p_ch, x=0)                #State 10 
+    _11 = State(P=p_oh, h=_10.h)            #State 11 (h10 = h11)
 
-    m2 = m1 * (abs(_9.h-_8.h)/abs(_2.h-_10.h))
-    m4 = (m1*(1- (_7.h/_3.h)) - m2*(1-(_11.h/_3.h)))/(1-(_6.h/_3.h))
-    m3 = m1 - m2 - m4
+    m2 = m1 * (abs(_9.h-_8.h)/abs(_2.h-_10.h))                          #Mass flow trough closed heater
+    m4 = (m1*(1- (_7.h/_3.h)) - m2*(1-(_11.h/_3.h)))/(1-(_6.h/_3.h))    #Mass flow trough open heater
+    m3 = m1 - m2 - m4                                                   #Mass flow trough condenser
 
     # Steam Generator Heat
     Q_in = m1*(_1.h - _9.h)
@@ -216,7 +215,8 @@ for j in range(5,115,10):
     # Thermal efficiency
     th = W_net/Q_in
 
-    p_ch_list.append(p_ch*10)
+    #Arrays for plotting
+    p_ch_list.append(bar)
     th_list.append(th*100)
     y2_list.append(m2/m1)
     y3_list.append(m3/m1)
@@ -225,12 +225,15 @@ for j in range(5,115,10):
     qout_list.append(Q_out/m1)
     wnet_list.append(W_net/m1)
 
+
+#Plot of Thermal Efficincy vs Extracted pressure
 plt.plot(p_ch_list,th_list)
 plt.xlabel('Higher pressure extracted (bar)')
 plt.ylabel('Thermal efficiency (%)')
 plt.grid(color='gray', ls = '-.', lw = 0.25)
 plt.show()
 
+#Plot of Extracted fraction vs Extracted pressure
 plt.plot(p_ch_list,y2_list, label=r'$\frac{\dot{m}_2}{\dot{m}_1}$')
 plt.plot(p_ch_list,y3_list, label=r'$\frac{\dot{m}_3}{\dot{m}_1}$')
 plt.legend(loc="center right")
@@ -239,6 +242,7 @@ plt.ylabel('Fraction extracted (-)')
 plt.grid(color='gray', ls = '-.', lw = 0.25)
 plt.show()
 
+#Plot of Qin, Qou, Wnet vs Extracted pressure
 fig, axs = plt.subplots(3, 1)
 axs[0].plot(p_ch_list, qout_list, label=r'$\dot{q}_{out}$')
 axs[0].legend(loc="upper right")
@@ -253,7 +257,6 @@ axs[2].grid(color='gray', ls = '-.', lw = 0.25)
 for ax in axs.flat:
     ax.set(xlabel='Higher pressure extracted (bar)', ylabel='(kJ/kg)')
 
-# Hide x labels and tick labels for top plots and y ticks for right plots.
 for ax in axs.flat:
     ax.label_outer()
 
