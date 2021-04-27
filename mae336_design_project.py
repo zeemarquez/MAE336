@@ -126,6 +126,45 @@ class State():
         print(line)
         print(''.join(['-' for x in line]))
        
+def printCycleTable():
+    print('\n\n-------------------------------------')
+    print("Thermal efficiency:",round(th*100,3),"%")
+    print('-------------------------------------')
+    print("Net Power:",round(W_net/m1,3),"kW/kg")
+    print('-------------------------------------')
+    print("Heat added:",round(Q_in/m1,3),"kW/kg")
+    print('-------------------------------------')
+    print("Heat released:",round(Q_out/m1,3),"kW/kg")
+    print('-------------------------------------')
+    print("Mass fraction 2:",round(m2/m1,3))
+    print('-------------------------------------')
+    print("Mass fraction 3:",round(m3/m1,3))
+    print('-------------------------------------')
+    print("Mass fraction 4:",round(m4/m1,3))
+    print('-------------------------------------\n\n')
+
+def export_cycleTable(filename='cycle.csv'):
+    csv_file = open(filename,"w")
+    csv_file.write('CYCLE RESULTS;VALUE\n')
+    csv_file.write('Thermal efficiency;' + str(round(th*100,3)) + ' %' + '\n' )
+    csv_file.write('Net Power;' + str(round(W_net/m1,3)) + ' kJ/kg ' + '\n' )
+    csv_file.write('Heat added;' + str(round(Q_in/m1,3)) + ' kJ/kg ' + '\n' )
+    csv_file.write('Heat released;' + str(round(Q_out/m1,3)) + ' kJ/kg ' + '\n' )
+    csv_file.write('Mass fraction 2;' + str(round(m2/m1,3)) + '\n' )
+    csv_file.write('Mass fraction 3;' + str(round(m3/m1,3)) + '\n' )
+    csv_file.write('Mass fraction 4;' + str(round(m4/m1,3)) + '\n' )
+
+def export_results(filename='results.csv'):
+    state_list = [_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11]
+    csv_file = open(filename,"w")
+    State.print_headers()
+    csv_file.write(State.get_csv_header())
+
+    for n, st in enumerate(state_list):
+        csv_file.write(st.get_csv_line('State '+ str(n + 1)))
+
+    csv_file.close()
+
 '''
 
 Pressure:       P (MPa)
@@ -155,8 +194,9 @@ wnet_list = []  #List of net power
 
 for bar in range(5,115,10):
 
-    p_ch = bar/10       #Pressure of closed heater in MPa
-
+    #Pressure of closed heater in MPa
+    p_ch = bar/10   
+    
     efficiency = 0.8    #Turbines and pumps isentropic efficiency   
     m1 = 1.5 * (10**4)  #mass flow trough steam generator kg/s
 
@@ -255,46 +295,9 @@ axs[2].legend(loc="upper right")
 axs[2].grid(color='gray', ls = '-.', lw = 0.25)
 
 for ax in axs.flat:
-    ax.set(xlabel='Higher pressure extracted (bar)', ylabel='(kJ/kg)')
+    ax.set(xlabel='Higher pressure extracted (bar)', ylabel=r'$\frac{kJ}{kg}$')
 
 for ax in axs.flat:
     ax.label_outer()
 
 plt.show()
-
-
-# View States Table
-
-def printCycleTable():
-    print('\n\n-------------------------------------')
-    print("Thermal efficiency:",round(th*100,3),"%")
-    print('-------------------------------------')
-    print("Net Power:",round(W_net/m1,3),"kW/kg")
-    print('-------------------------------------')
-    print("Heat added:",round(Q_in/m1,3),"kW/kg")
-    print('-------------------------------------')
-    print("Heat released:",round(Q_out/m1,3),"kW/kg")
-    print('-------------------------------------')
-    print("Mass fraction 2:",round(m2/m1,3))
-    print('-------------------------------------')
-    print("Mass fraction 3:",round(m3/m1,3))
-    print('-------------------------------------')
-    print("Mass fraction 4:",round(m4/m1,3))
-    print('-------------------------------------\n\n')
-
-def export_results(filename='results.csv'):
-    state_list = [_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11]
-    csv_file = open(filename,"w")
-    State.print_headers()
-    csv_file.write(State.get_csv_header())
-
-    for n, st in enumerate(state_list):
-        csv_file.write(st.get_csv_line('State '+ str(n + 1)))
-
-    csv_file.close()
-
-
-
-
-
-
