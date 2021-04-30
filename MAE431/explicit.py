@@ -267,8 +267,17 @@ for i_row,row in enumerate(Z):
 fig, ax = plt.subplots()
 CS = ax.contourf(X, Y, Z,levels=range(300,640,40))
 ax.clabel(CS, inline=False, fontsize=10)
-ax.set_title('Isothermal lines')
+ax.set_title('Isothermal lines',pad=30)
 ax.grid(True, color='black')
 ax.yaxis.set_ticks(np.arange(0, 4, 1))
+ax.set_yticklabels([])
+ax.set_xticklabels([])
+ax.set_aspect('equal')
+
+i = 1
+for x,y in Pos:
+    ax.text(x-0.15, y-0.15, str(i), style='italic', bbox={'facecolor': 'white', 'alpha': 1, 'pad': 5}, fontsize=6)
+    i += 1
+
 fig.colorbar(CS)
 plt.show()
