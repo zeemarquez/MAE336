@@ -14,7 +14,7 @@ l = 50/1000
 
 dt = 1
 
-hours = 5
+hours = 100
 
 t = 0
 t_final = hours * 3600 # Seconds
@@ -204,7 +204,8 @@ while t < t_final:
     T_0 = T
     T =  np.dot(A_inv,C) 
 
-    if steady and np.max(np.abs(T-T_0)) < 0.01:
+    if steady and (np.max(np.abs(T-T_0))/dt) < 0.001:
+        exportTemperatures(T, 'implicit_steady')
         t_steady = t
         print()
         print('t steady:',t_steady)
@@ -214,8 +215,8 @@ while t < t_final:
 
     t += dt
 
-printTemperatures(T, str(hours) + ' hours')
-exportTemperatures(T, str(hours) + 'h')
+printTemperatures(T, 'implicit_' + str(hours) + ' hours')
+exportTemperatures(T, 'implicit_' + str(hours) + 'h')
 
 Pos = np.array([
     [0,0],  #1
